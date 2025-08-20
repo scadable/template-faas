@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # This worker is configured to handle 'Type A' devices
+  # by pointing HANDLER_FUNCTION to the specific decoder.
+  worker-for-device-a:
+    build: .
+    ports:
+      - "8001:8000" # Expose on host port 8001
+    environment:
+      - HANDLER_FUNCTION=decoders.decode_type_a
+    volumes:
+      # Mounting the code allows you to change the decoder logic
+      # without rebuilding the image (great for development).
+      - .:/app
+
+  # This worker is configured to handle 'Type B' devices
+  # by pointing to a different decoder function.
+  worker-for-device-b:
+    build: .
+    ports:
+      - "8002:8000" # Expose on host port 8002
+    environment:
+      - HANDLER_FUNCTION=decoders.decode_type_b
+    volumes:
+      - .:/app
+
+  # This worker runs the default handler from function/handler.py
+  worker-default:
+    build: .
+    ports:
+      - "8003:8000" # Expose on host port 8003
+    # No environment variable needed here, so it uses the
+    # default specified in the Dockerfile.
+    volumes:
+      - .:/app
