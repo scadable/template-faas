@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   # This worker is configured to handle 'Type A' devices
@@ -34,3 +33,9 @@ services:
     # default specified in the Dockerfile.
     volumes:
       - .:/app
+
+  test-runner:
+    build: .
+    volumes:
+      - .:/app
+    command: pytest
