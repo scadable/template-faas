@@ -9,16 +9,14 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code into the container
-# This includes main.py, the 'function' directory, and decoders.py
-COPY . .
+COPY app .
 
 # Set a default value for the handler function environment variable.
-# This can be overridden at runtime (e.g., with `docker run -e ...`).
 ENV HANDLER_FUNCTION="function.handler.handle"
 
 # Expose the port the app runs on
 EXPOSE 8000
 
 # Command to run the application using Uvicorn
-# --host 0.0.0.0 makes it accessible from outside the container
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# The path is now 'app.main:app' to reflect the new directory structure.
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

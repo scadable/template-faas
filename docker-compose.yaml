@@ -13,6 +13,7 @@ services:
       # Mounting the code allows you to change the decoder logic
       # without rebuilding the image (great for development).
       - .:/app
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
   # This worker is configured to handle 'Type B' devices
   # by pointing to a different decoder function.
@@ -24,6 +25,7 @@ services:
       - HANDLER_FUNCTION=tests.decoders.decode_type_b
     volumes:
       - .:/app
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
   # This worker runs the default handler from function/handler.py
   worker-default:
@@ -34,3 +36,4 @@ services:
     # default specified in the Dockerfile.
     volumes:
       - .:/app
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
