@@ -20,9 +20,8 @@ def client_with_handler(request):
         os.environ['HANDLER_FUNCTION'] = "function.handler.handle"
 
     # The TestClient constructor automatically runs the startup event
-    test_client = TestClient(app)
-
-    yield test_client
+    with TestClient(app) as test_client:
+        yield test_client
 
     # Clean up the environment variable after the test has run
     if 'HANDLER_FUNCTION' in os.environ:
@@ -33,10 +32,10 @@ def client_with_handler(request):
 # The 'client_with_handler' fixture will be automatically passed as an argument
 def test_health_check_endpoint():
     """Test the /health endpoint."""
-    response = TestClient(app).get("/health")
-    assert response.status_code == 200
-    assert response.json()["status"] == "ok"
-
+    with TestClient(app) as client:
+        response = client.get("/health")
+        assert response.status_code == 200
+        assert response.json()["status"] == "ok"
 
 @pytest.mark.handler("function.handler.handle")
 def test_default_handler_json_input(client_with_handler):
@@ -87,5 +86,6 @@ def test_invalid_handler_config():
     os.environ['HANDLER_FUNCTION'] = "non.existent.handler"
     # Use pytest.raises to assert that a RuntimeError is raised
     with pytest.raises(RuntimeError, match="Failed to load handler function"):
-        TestClient(app)
+        with TestClient(app):
+            pass
     del os.environ['HANDLER_FUNCTION']
