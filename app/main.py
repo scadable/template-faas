@@ -4,7 +4,7 @@ from starlette import status
 from fastapi import FastAPI, HTTPException
 
 import logging
-from schemas import RequestData
+from app.schemas import RequestData
 from datetime import datetime, UTC
 from typing import Callable, Any
 
