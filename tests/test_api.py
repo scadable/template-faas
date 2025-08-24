@@ -1,4 +1,5 @@
 import os
+import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 
@@ -76,11 +77,8 @@ def test_decoder_type_b():
 def test_invalid_handler_config():
     """Test that a bad handler name fails gracefully on startup."""
     os.environ['HANDLER_FUNCTION'] = "non.existent.handler"
-    try:
-        # This will fail during startup as the handler cannot be found
+    # Use pytest.raises to assert that a RuntimeError is raised
+    with pytest.raises(RuntimeError, match="Failed to load handler function"):
         TestClient(app)
-        assert False, "TestClient should have raised a RuntimeError"
-    except RuntimeError as e:
-        assert "Failed to load handler function" in str(e)
     # Clean up the environment variable
     del os.environ['HANDLER_FUNCTION']
